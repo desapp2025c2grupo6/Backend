@@ -19,7 +19,10 @@
     "lint": "run-p lint:*",
     "lint:eslint": "eslint --fix ./lib",
     "lint:prettier": "prettier --write ./lib",
-    "test": "jest --runInBand",
+  "test": "node -r ./test/polyfill.js ./node_modules/.bin/jest --runInBand",
+  "itest": "node ./test/run-tests.js",
+  "db:reset": "node ./scripts/reset-db.js",
+  "db:reset-cjs": "node ./scripts/reset-db-cjs.js",
     "test:watch": "jest --runInBand --watch",
     "heroku-postbuild": "run-s build db:migrate"
   },
@@ -47,6 +50,8 @@
     "pg": "^8.3.3",
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.37.7"
+    ,
+    "joi": "^17.9.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",

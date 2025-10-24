@@ -8,6 +8,8 @@ import debugPkg from 'debug';
 import http from 'http';
 import app from '../lib/app';
 import db from '../lib/models';
+import seedAffiliados from '../lib/seeders/20251023-seed-afiliados';
+import seedPrestadores from '../lib/seeders/20251023-seed-prestadores';
 
 const debug = debugPkg('js/www:server');
 
@@ -26,11 +28,29 @@ if (!port) {
 }
 
 // Run sequelize before listen
-db.sequelize.authenticate().then(() => {
-  app.listen(port, () => {
-    console.log(`¡Aplicación iniciada! ====> 🌎 http://localhost:${port}`);
+db.sequelize
+  .authenticate()
+  .then(async () => {
+    // Ensure models are synced before starting the server
+    await db.sequelize.sync();
+    try {
+      await seedAffiliados();
+    } catch (err) {
+      console.error('Error running afiliados seeder:', err);
+    }
+    try {
+      await seedPrestadores();
+    } catch (err) {
+      console.error('Error running prestadores seeder:', err);
+    }
+    server.listen(port, () => {
+      console.log(`¡Aplicación iniciada! ====> 🌎 http://localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Error connecting to the database:', err);
+    process.exit(1);
   });
-});
 
 server.on('error', onError);
 server.on('listening', onListening);
